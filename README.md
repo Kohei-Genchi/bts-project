@@ -1,78 +1,205 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# bts-project
+## 🚀 Local Development Environment
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+```
+PHP 7.4.8
+Composer 1.10.9
+laravel 6.9
 
-## About Laravel
+[Docker]
+mariadb 10.5.4
+redis 6.0.5
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ How To SetUp
+```
+brew install php@7.4
+brew install redis
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+git clone https://github.com/Kohei-Genchi/sample-bts-project.git
+---------------
+※Edit .env File
+※Edit database.php
+※Edit session.php
+---------------
+cd bts-project
+docker-composer up -d
+cd src
+composer update
+php artisan migrate
+php artisan db:seed 
+## 🔒 TestAccount
+name	password	Auth
+system	system	1
+admin	admin	2
+user	user	3
+customer	customer	4
+```
+## 📚 Reference
+```
+php artisan make:model Company
+php artisan make:migration create_companies_table
+php artisan make:factory CompanyFactory
+php artisan make:seeder CompanyTableSeeder
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+//Edit xxx_create_companies_table.php
+<?php
 
-## Learning Laravel
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+class CreateCompaniesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('companies', function (Blueprint $table) {
+            $table->bigIncrements('company_id');
+            $table->integer('users_id');
+            $table->String('company_name');
+            $table->string('company_password');
+            $table->timestamps();
+        });
+    }
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('company');
+    }
+}
 
-## Laravel Sponsors
+//Edit CompanyTableSeeder.php
+<?php
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+use Illuminate\Database\Seeder;
+use App\Repositories\Models\Company;
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+class CompanyTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        factory(Company::class, 10)->create();
+    }
+}
 
-## Contributing
+//Edit CompanyFactory.php
+<?php
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+/** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-## Code of Conduct
+use App\Repositories\Models\Company;
+use Faker\Generator as Faker;
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+$factory->define(Company::class, function (Faker $faker) {
+    return [
+        'users_id' => $faker->numberBetween($min = 1, $max = 10000),
+        'company_name' => $faker->company,
+        'company_password'=>$faker->password,
+        'created_at' => $faker->datetime($max = 'now', $timezone = date_default_timezone_get()),
+        'updated_at' => $faker->datetime($max = 'now', $timezone = date_default_timezone_get()),
+    ];
+});
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+//Edit DatabaseSeeder.php
+php artisan migrate
+php artisan db:seed
+```
 
-## License
+## TDD
+```
+@phpunit
+@php artisan dusk
+@cat storage/logs/laravel.log
+@RefreshDatabaseとDatabaseMigrations
+Edit phpunit.xml
+<testsuite name="Browser">
+            <directory suffix="Test.php">./tests/Browser</directory>
+</testsuite>
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1.Edit web.php
+2.php artisan make:test TaskControllerTest
+rm -rf tests/Feature/ExampleTest.php
+rm -rf tests/Unit/ExampleTest.php
+3.Edit TaskControllerTest.php
+4.php artisan make:controller TaskController
+5.Edit TaskController.php
+6.php artisan make:model Task -m
+7.Edit Task.php  //protected $filable=[];
+8.Edit xxx_create_tasks_table.php
+9.php artisan make:seeder TasksTableSeeder
+10.Edit TasksTableSeeder.php
+11.Edit DatabaseSeeder.php
+12.composer dump-autoload
+13.php artisan migrate --env=testing --seed
+14.php artisan make:test TaskTest --unit
+15.touch resources/views/tasks/index.blade.php
+//VueFile
+composer require --dev laravel/dusk:"^2.0"
+php artisan dusk:install
+rm -rf tests/Browser/ExampleTest.php
+16.Edit DuskTestCase.php
+$options = (new ChromeOptions)->addArguments([
+            '--disable-gpu',
+            '--headless',
+            '--lang=ja_JP'
+        ]);
+17.php artisan dusk:make TasksIndexTest
+18.Edit TasksIndexTest.php
+19.Edit TaskController.php
+
+composer require "laravelcollective/html":"^5.4.0"
+Edit config/app.php
+Collective\Html\HtmlServiceProvider::class,
+(略)
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+        
+```
+## Have to do
+```
+CREATE DATABASE DATABASE-NAME;
+※Edit database.php
+'default' => env('DATABASE-NAME','DATABASE-NAME' ),   //作成後、'default' => env('DB_CONNECTION', 'mysql'),に戻す
+
+'connections' => [
+        'DATABASE-NAME' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('127.0.0.1', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('Grady_GrouCp', 'Grady_GrouCp'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+    ],
+
+```
+php artisan migrate<br>
+php artisan db:seed --class=ClientTableSeeder<br>
+php artisan db:seed --class=UserTableSeeder
